@@ -1,6 +1,5 @@
 
 <template>
-    <Layout>
         <h1 class="text-3xl">
             Users
         </h1>
@@ -16,16 +15,15 @@
                 Refresh
             </Link>
         </div>
-    </Layout>
 </template>
 
 <script>
-import Layout from "../Shared/Layout.vue";
 import {Link} from "@inertiajs/inertia-vue3";
+import Layout from "../Shared/Layout.vue";
 
 export default {
-    components: {Layout, Link},
-
+    components: { Link},
+    layout: Layout,
     props: {time: String}
 };
 </script>
