@@ -11,3 +11,16 @@ Route::get('/', function () {
         ]
     ]);
 });
+
+
+
+Route::get('/users', function () {
+    return Inertia::render('Users', [
+        'name' => 'Sajo',
+    ]);
+});
+
+
+Route::get('/settings', function () {
+    return Inertia::render('Settings');
+});

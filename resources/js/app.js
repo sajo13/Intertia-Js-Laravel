@@ -3,6 +3,7 @@ import './bootstrap';
 
 import { createApp, h } from 'vue'
 import { createInertiaApp } from '@inertiajs/vue3'
+import { InertiaProgress } from '@inertiajs/progress';
 
 createInertiaApp({
     resolve: name => {
@@ -14,4 +15,9 @@ createInertiaApp({
             .use(plugin)
             .mount(el)
     },
-})
+});
+
+InertiaProgress.init({
+    color: 'red',
+    showSpinner: true,
+});
