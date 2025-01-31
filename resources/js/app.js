@@ -9,12 +9,20 @@ import Layout from "./Shared/Layout.vue";
 
 createInertiaApp({
     resolve: async name => {
+        try {
+            const sanitizedName = name.replace(/\.\.\//g, '');
+            const importPath = `./Pages/${sanitizedName}.vue`;
+            console.log(name);
+            console.log('Dynamic import path:', importPath);
 
-        const page = (await import(`./Pages/${name}.vue`)).default;
+            const page = (await import(importPath)).default;
 
-        page.layout ??= Layout;
-
-        return page;
+            page.layout ??= Layout;
+            return page;
+        } catch (error) {
+            console.error(`Error loading page: ${name}`, error);
+            throw error;
+        }
     },
     setup({ el, App, props, plugin }) {
         createApp({ render: () => h(App, props) })
