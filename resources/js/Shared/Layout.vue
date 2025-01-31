@@ -6,6 +6,7 @@
             content="Information about my app"
             head-key="description"
         >
+
     </Head>
 
     <section class="p-6 bg-gray-200">
