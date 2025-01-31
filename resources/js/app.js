@@ -16,8 +16,9 @@ createInertiaApp({
             console.log('Dynamic import path:', importPath);
 
             const page = (await import(importPath)).default;
-
-            page.layout ??= Layout;
+            if (page.layout === undefined) {
+                page.layout = Layout;
+            }
             return page;
         } catch (error) {
             console.error(`Error loading page: ${name}`, error);
