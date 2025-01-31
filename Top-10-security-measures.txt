@@ -64,3 +64,72 @@ php artisan serve
 
    {{ $userInput }}
 
+
+6. Cross-Site Request Forgery (CSRF) Protection
+   Laravel protects your application from CSRF attacks by generating a token for every active session.
+   This token is verified with every form submission.
+
+   <form method="POST" action="/submit">
+       @csrf
+       <!-- Form fields -->
+       <button type="submit">Submit</button>
+   </form>
+
+    Laravel will automatically check the CSRF token when a POST request is made,
+    and if it doesn't match, the request will be denied.
+
+7. Password Hashing
+   Never store plain text passwords. Use Laravel's built-in Hash facade to securely hash passwords before storing them.
+
+
+   use Illuminate\Support\Facades\Hash;
+
+   $password = Hash::make('user_password');
+
+
+   When verifying passwords during login:
+    if (Hash::check('user_password', $storedPassword)) {
+        // Passwords match
+    }
+
+8. Rate Limiting
+   To prevent brute force attacks, you can use Laravel’s rate limiting functionality.
+
+
+
+   use Illuminate\Cache\RateLimiting\Limit;
+
+   Route::middleware('throttle:10,1')->group(function () {
+       // Limit 10 requests per minute
+       Route::post('/login', [LoginController::class, 'login']);
+   });
+
+9. Encrypting Sensitive Data
+   To store sensitive data securely, you can use Laravel’s built-in encryption mechanisms.
+
+   For example, using Crypt facade:
+
+   use Illuminate\Support\Facades\Crypt;
+
+   $encrypted = Crypt::encryptString('Sensitive Data');
+   $decrypted = Crypt::decryptString($encrypted);
+
+
+10. Secure Headers
+    You can set secure HTTP headers for added protection. Laravel provides a middleware to add security headers such as X-Content-Type-Options and Strict-Transport-Security.
+
+    In your App\Http\Middleware\SecureHeaders.php:
+
+    public function handle($request, Closure $next)
+    {
+        $response = $next($request);
+
+        $response->headers->set('X-Content-Type-Options', 'nosniff');
+        $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+
+        return $response;
+    }
+
+    //Register this middleware in Kernel.php.
+
+
