@@ -41,6 +41,31 @@ Eloquent would allow you to do this:
 $user = User::where('email', $email)->first();
 
 
+# Scope Queries
+Scope queries in Laravel are custom query constraints that you define in your Eloquent models.
+These scopes allow you to encapsulate commonly used query logic and reuse it across your application.
 
+Example:
+You might frequently need to fetch only active users or filter posts by their published date.
+You can define a scope to handle these queries.
+
+
+// In User model
+public function scopeActive($query)
+{
+    return $query->where('status', 'active');
+}
+
+// Usage:
+$activeUsers = User::active()->get();
+
+# Eager Loading
+
+To avoid this, use eager loading with the with method:
+$posts = Post::with('comments')->get();  // Eager load comments with posts in a single query
+
+foreach ($posts as $post) {
+    echo $post->comments;  // No extra queries for comments
+}
 
 
