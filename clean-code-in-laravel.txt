@@ -1,4 +1,4 @@
-
+Source: https://medium.com/@elijah_williams_agc/10-tips-for-updating-your-laravel-coding-techniques-55a966a2912c
 
 Using the dependency injection, which makes the code more testable and flexible.
 The Laravel service container is powerful for managing class dependencies and performing dependency injection.
@@ -176,3 +176,37 @@ class AppServiceProvider extends ServiceProvider
 
       // Other controller actions can follow...
   }
+
+## Using queues for time-consuming tasks in Laravel is an excellent way to improve the performance and responsiveness of your application. By offloading heavy tasks to a queue, you ensure that the user doesn’t have to wait for these tasks to complete before receiving a response.
+
+Here’s how you can use queues in Laravel:
+
+To set up a queue driver, open your .env file and specify your preferred driver:
+QUEUE_CONNECTION=database
+
+Create a Job
+You can create a job class using the Artisan command:
+    php artisan make:job SendEmail
+
+    public function handle()
+    {
+        Mail::to($this->user->email)->send(new WelcomeEmail($this->user));
+    }
+
+
+Dispatch the Job
+To dispatch the job to the queue, use the dispatch() method:
+    SendEmail::dispatch($user);
+
+ Process the Queue
+To process jobs, you need to run the queue worker.
+You can start a worker in the terminal with this command:
+php artisan queue:work
+
+
+Handling Failed Jobs
+If a job fails, Laravel provides built-in support for failed job handling. You can configure failed job storage in the config/queue.php file. You can retry failed jobs or inspect them later.
+
+For example, you can check for failed jobs with:
+php artisan queue:failed
+
