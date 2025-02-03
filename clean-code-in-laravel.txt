@@ -356,3 +356,57 @@ class OrderService {
 // Usage example
 $orderService = new OrderService(new StandardShipping());
 $orderShippingCost = $orderService->calculateOrderShipping($order);
+
+
+ // Avoid using flags in code
+ Improved Approach: Using Specific Methods Instead of Flags
+ Instead of relying on flags to determine which payment method to use,
+ we can create separate methods for each payment type. This leads to cleaner,
+ more maintainable code where each method is responsible for a specific behavior.
+      class PaymentProcessor
+      {
+          public function processCreditCardPayment($amount, $creditCardDetails)
+          {
+              // Logic for processing credit card payment
+              echo "Processing credit card payment of $amount using card $creditCardDetails\n";
+          }
+
+          public function processPayPalPayment($amount, $paypalAccount)
+          {
+              // Logic for processing PayPal payment
+              echo "Processing PayPal payment of $amount using PayPal account $paypalAccount\n";
+          }
+
+          public function processGiftCardPayment($amount, $giftCardCode)
+          {
+              // Logic for processing gift card payment
+              echo "Processing gift card payment of $amount using code $giftCardCode\n";
+          }
+      }
+
+
+      How This Improves the Design:
+          Clarity and Simplicity: Each method now has a single responsibility and describes exactly what is being done.
+          There are no flags to toggle, and each method is clear in its purpose.
+          Avoids Flag Overload: The API is much easier to understand since the caller no longer needs to manage flags.
+           They just call the appropriate method directly based on the payment type.
+          Extensibility: If a new payment method (e.g., cryptocurrency) needs to be added,
+          we simply create a new method like processCryptoPayment() instead of adding more flags.
+          Better Encapsulation: Each method can encapsulate the logic specific to that payment type.
+          If the logic for handling credit card payments changes, you only need to update the processCreditCardPayment() method.
+          Simpler Testing: Each method is now easier to test in isolation. If you need to test PayPal payment processing,
+          you can test processPayPalPayment() without worrying about the flags or state in other methods.
+
+      Usage Example:
+      With the improved design, calling the methods becomes much simpler:
+
+      $paymentProcessor = new PaymentProcessor();
+
+      // Process credit card payment
+      $paymentProcessor->processCreditCardPayment(100, '1234-5678-9876-5432');
+
+      // Process PayPal payment
+      $paymentProcessor->processPayPalPayment(50, 'user@example.com');
+
+      // Process gift card payment
+      $paymentProcessor->processGiftCardPayment(25, 'GC12345XYZ');
