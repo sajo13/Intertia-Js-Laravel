@@ -315,3 +315,44 @@ php artisan queue:failed
 
         Laravel Example: Instead of tightly coupling a controller to a specific implementation
         (e.g., a database repository), inject the repository interface into the controller.
+
+
+# Strategy Pattern
+The Strategy Pattern allows you to define a family of algorithms (or strategies) and make them interchangeable.
+This is useful when you need to choose between different actions or algorithms dynamically.
+
+Example: Consider different shipping strategies (e.g., standard, express) for processing an order.
+You can use the Strategy Pattern to define each shipping strategy and make the strategy swappable.
+
+
+interface ShippingStrategyInterface {
+    public function calculateShippingCost(Order $order): float;
+}
+
+class StandardShipping implements ShippingStrategyInterface {
+    public function calculateShippingCost(Order $order): float {
+        return 5.0; // Standard rate
+    }
+}
+
+class ExpressShipping implements ShippingStrategyInterface {
+    public function calculateShippingCost(Order $order): float {
+        return 10.0; // Express rate
+    }
+}
+
+class OrderService {
+    protected ShippingStrategyInterface $shippingStrategy;
+
+    public function __construct(ShippingStrategyInterface $shippingStrategy) {
+        $this->shippingStrategy = $shippingStrategy;
+    }
+
+    public function calculateOrderShipping(Order $order): float {
+        return $this->shippingStrategy->calculateShippingCost($order);
+    }
+}
+
+// Usage example
+$orderService = new OrderService(new StandardShipping());
+$orderShippingCost = $orderService->calculateOrderShipping($order);
