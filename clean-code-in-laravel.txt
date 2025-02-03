@@ -68,4 +68,111 @@ foreach ($posts as $post) {
     echo $post->comments;  // No extra queries for comments
 }
 
+#Adopt Repository Pattern for Database Interaction
+For complex applications, adopting the repository and service patterns can help decouple your application from Laravel’s Eloquent ORM.
+This will make your codebase more testable, maintainable, and adaptable to future changes.
 
+    For example, if you have a Post model, create an interface like this:
+    namespace App\Repositories;
+
+interface PostRepositoryInterface
+{
+    public function getAll();
+    public function find($id);
+    public function create(array $data);
+    public function update($id, array $data);
+    public function delete($id);
+}
+
+ Create a Concrete Repository Class
+namespace App\Repositories;
+
+use App\Models\Post;
+
+class PostRepository implements PostRepositoryInterface
+{
+    protected $model;
+
+    public function __construct(Post $post)
+    {
+        $this->model = $post;
+    }
+
+    public function getAll()
+    {
+        return $this->model->all();
+    }
+
+    public function find($id)
+    {
+        return $this->model->find($id);
+    }
+
+    public function create(array $data)
+    {
+        return $this->model->create($data);
+    }
+
+    public function update($id, array $data)
+    {
+        $post = $this->model->find($id);
+        return $post ? $post->update($data) : null;
+    }
+
+    public function delete($id)
+    {
+        $post = $this->model->find($id);
+        return $post ? $post->delete() : null;
+    }
+}
+
+    Now, you need to bind the interface to the concrete repository class in a service provider.
+    You can do this in the AppServiceProvider or create a new one.
+
+namespace App\Providers;
+
+use Illuminate\Support\ServiceProvider;
+use App\Repositories\PostRepositoryInterface;
+use App\Repositories\PostRepository;
+
+class AppServiceProvider extends ServiceProvider
+{
+    public function register()
+    {
+        $this->app->bind(PostRepositoryInterface::class, PostRepository::class);
+    }
+
+    public function boot()
+    {
+        //
+    }
+}
+
+  In your controllers, you can inject the repository interface and use it to interact with the database.
+  namespace App\Http\Controllers;
+
+  use App\Repositories\PostRepositoryInterface;
+
+  class PostController extends Controller
+  {
+      protected $postRepository;
+
+      public function __construct(PostRepositoryInterface $postRepository)
+      {
+          $this->postRepository = $postRepository;
+      }
+
+      public function index()
+      {
+          $posts = $this->postRepository->getAll();
+          return view('posts.index', compact('posts'));
+      }
+
+      public function show($id)
+      {
+          $post = $this->postRepository->find($id);
+          return view('posts.show', compact('post'));
+      }
+
+      // Other controller actions can follow...
+  }
