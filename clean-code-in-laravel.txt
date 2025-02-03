@@ -1,0 +1,46 @@
+
+
+Using the dependency injection, which makes the code more testable and flexible.
+The Laravel service container is powerful for managing class dependencies and performing dependency injection.
+
+Eg:
+
+use Illuminate\Contracts\Cache\Repository as Cache;
+
+public function __construct(Cache $cache)
+
+{
+
+    $this->cache = $cache;
+
+}
+
+public function index()
+
+{
+
+    $users = $this->cache->remember(‘users’, 60, function () {
+
+    return User::all();
+
+    });
+
+}
+
+
+Another example is the use of raw SQL queries instead of Eloquent ORM.
+Eloquent provides a more readable, maintainable, and secure way to interact with the database.
+
+Shifting to Eloquent ORM can significantly reduce the risk of SQL injection.
+Eloquent automatically handles escaping user input, ensuring that any data passed to queries is properly sanitized.
+
+For example, instead of writing raw SQL queries like this:
+$query = "SELECT * FROM users WHERE email = '$email'";
+
+Eloquent would allow you to do this:
+$user = User::where('email', $email)->first();
+
+
+
+
+
