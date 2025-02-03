@@ -210,3 +210,108 @@ If a job fails, Laravel provides built-in support for failed job handling. You c
 For example, you can check for failed jobs with:
 php artisan queue:failed
 
+
+// # SOLID Principles in Laravel
+     SOLID is an acronym for five design principles that help guide developers toward creating maintainable and flexible code. Here’s a quick rundown of each principle and how they can be applied to Laravel:
+
+     S - Single Responsibility Principle (SRP) # //
+    The Single Responsibility Principle states that a class should have only one reason to change,
+    meaning it should only have one job or responsibility.
+
+    // Example of violating SRP in a controller
+    class PostController extends Controller {
+        public function store(Request $request) {
+            $post = Post::create($request->all());
+            Notification::send($user, new PostCreated($post)); // This violates SRP.
+            return redirect()->route('posts.index');
+        }
+    }
+
+    // Refactored version applying SRP
+    class PostController extends Controller {
+        protected $notificationService;
+
+        public function __construct(NotificationService $notificationService) {
+            $this->notificationService = $notificationService;
+        }
+
+        public function store(Request $request) {
+            $post = Post::create($request->all());
+            $this->notificationService->sendPostCreatedNotification($post);
+            return redirect()->route('posts.index');
+        }
+    }
+
+    class NotificationService {
+        public function sendPostCreatedNotification($post) {
+            Notification::send($user, new PostCreated($post));
+        }
+    }
+
+
+     O - Open/Closed Principle (OCP)
+        The Open/Closed Principle states that software entities should be open for extension but closed for modification.
+        You should be able to add new functionality without altering existing code.
+
+        Laravel Example: Laravel's service container and service providers make it easy to extend functionality without modifying core classes.
+        For example, if you have a notification system, you can create new notification channels (e.g., SMS, email) without changing the existing notification code.
+
+        // You can extend the Notification class to add more channels
+        class NewSmsChannel extends SmsChannel {
+            public function send($notifiable, Notification $notification) {
+                // custom logic for sending SMS
+            }
+        }
+
+        // Add it to your service container
+        app()->bind(SmsChannel::class, NewSmsChannel::class);
+
+
+     L - Liskov Substitution Principle (LSP)
+        The Liskov Substitution Principle states that objects of a superclass should be replaceable with objects of a subclass
+        without affecting the correctness of the program.
+
+        Laravel Example: If you have an abstract class or interface for sending notifications,
+        your subclasses (like email or SMS notifications) should be replaceable without causing errors.
+        For instance, if you're using polymorphism for notifications, the class or interface methods should behave correctly when substituted.
+
+        interface NotificationChannel {
+            public function send(Notification $notification);
+        }
+
+        class EmailChannel implements NotificationChannel {
+            public function send(Notification $notification) {
+                // Send via email
+            }
+        }
+
+        class SmsChannel implements NotificationChannel {
+            public function send(Notification $notification) {
+                // Send via SMS
+            }
+        }
+
+     I - Interface Segregation Principle (ISP)
+         The Interface Segregation Principle states that no client should be forced to depend on methods it does not use.
+         In other words, create small, specific interfaces rather than large, general-purpose ones.
+
+         Laravel Example: Instead of creating one large NotificationServiceInterface,
+         you could create more granular interfaces like EmailNotificationInterface and SmsNotificationInterface,
+         depending on which type of notification a service class implements.
+
+
+        interface EmailNotificationInterface {
+            public function sendEmail(Notification $notification);
+        }
+
+        interface SmsNotificationInterface {
+            public function sendSms(Notification $notification);
+        }
+
+     D - Dependency Inversion Principle (DIP)
+        The Dependency Inversion Principle suggests that high-level modules should not depend on low-level modules,
+        but both should depend on abstractions. In Laravel, the service container is often used to achieve
+        this by injecting dependencies rather than directly instantiating them.
+
+        Laravel Example: Instead of tightly coupling a controller to a specific implementation
+        (e.g., a database repository), inject the repository interface into the controller.
